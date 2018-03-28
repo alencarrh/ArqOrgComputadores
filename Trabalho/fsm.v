@@ -7,6 +7,7 @@ module PERIFERICO(per_rst, per_clk, per_send, per_ack, in_per_dados);
   output reg per_ack;
   input reg [3:0] in_per_dados;
   reg [3:0] per_dados;
+  reg last_send;
 
 
   reg E;  //estado
@@ -16,7 +17,10 @@ module PERIFERICO(per_rst, per_clk, per_send, per_ack, in_per_dados);
   always @ (posedge per_clk)
     begin
       if(per_rst == 1)
-        E <= 0;
+        begin 
+          E <= 0;
+          last_send = 0;
+        end 
       else
         E <= PE;
     end
@@ -33,25 +37,25 @@ module PERIFERICO(per_rst, per_clk, per_send, per_ack, in_per_dados);
 
   always @ (posedge per_clk)
     begin
-      if (per_send == 1)
+      if ((per_send == 1 && last_send == 0) || (last_send == 1))
         begin
     	  per_dados <= in_per_dados;
       	  per_ack <= 1;
+          last_send = 1;
         end
       else
-        per_ack <= 0;
+        begin
+          per_ack <= 0;
+          last_send = 0;
+        end 
     end
 endmodule
 
 /*
-
 module CPU(cpu_rst, cpu_clk, cpu_send, cpu_ack, cpu_dados);
   
-
-
   reg E;  //estado
   reg PE; //próximo estado
-
   /***** ATUALIZAR ESTADO ATUAL ***** /
   always @ (posedge cpu_clk)
     begin
@@ -61,7 +65,5 @@ module CPU(cpu_rst, cpu_clk, cpu_send, cpu_ack, cpu_dados);
         E <= PE;
     end
   /***** END - ATUALIZAR ESTADO ATUAL ***** /
-
 endmodule
-
   */
