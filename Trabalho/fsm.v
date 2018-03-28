@@ -19,7 +19,6 @@ module PERIFERICO(per_rst, per_clk, per_send, per_ack, in_per_dados);
       if(per_rst == 1)
         begin 
           E <= 0;
-          last_send = 0;
         end 
       else
         E <= PE;
@@ -37,17 +36,17 @@ module PERIFERICO(per_rst, per_clk, per_send, per_ack, in_per_dados);
 
   always @ (posedge per_clk)
     begin
-      if ((per_send == 1 && last_send == 0) || (last_send == 1))
+      if ((per_send == 1 && last_send == 0) || (last_send == 1 && per_send == 1))
         begin
     	  per_dados <= in_per_dados;
       	  per_ack <= 1;
           last_send = 1;
-        end
+        end  
       else
         begin
           per_ack <= 0;
           last_send = 0;
-        end 
+        end
     end
 endmodule
 
