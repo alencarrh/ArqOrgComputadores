@@ -1,10 +1,10 @@
 module test;
   reg per_clk;
-  //reg cpu_clk;
+  reg cpu_clk;
 
 
-  //always #5 cpu_clk<=~cpu_clk; //Clock CPU
-
+  always #1 cpu_clk<=~cpu_clk; //Clock CPU
+  always #1 per_clk<=~per_clk; //Clock Periférico
 
   reg per_rst;
   reg per_send;
@@ -24,28 +24,8 @@ module test;
       $dumpfile("dump.vcd");
       $dumpvars(3,test);
 
-
-      per_rst = 1;
-      per_send = 0;
-      in_per_dados = 4'b0000;
-      #5
-
-      per_rst = 0;
-      per_send = 0;
-      in_per_dados = 4'b0000;
-
-      #5
-
-      per_send = 1;
-      in_per_dados = 4'b1111;
-
-
-
-
-
-      per_clk=0;
       #100 $finish; //<-- End simulation
 	end
 
-   always #1 per_clk<=~per_clk; //Clock Periférico
+
 endmodule
