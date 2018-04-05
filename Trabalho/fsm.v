@@ -29,7 +29,7 @@ module PERIFERICO(per_reset, per_clock, per_send, per_ack, in_per_dados);
   /***** CALCULAR PRÓXIMO ESTADO *****/
   always @ (*)
     begin
-      if (per_send == 1 && per_reset == 0)
+      if (per_send == 1)
     	proximo_estado = 1;
       else
         proximo_estado = 0;
@@ -65,31 +65,24 @@ module PERIFERICO(per_reset, per_clock, per_send, per_ack, in_per_dados);
 endmodule
 
 
+module CPU(cpu_reset, cpu_clock, cpu_send, cpu_ack, cpu_dados);
+  input cpu_ack; //Bit indicativo se o periférico já recebeu os dados
+  input cpu_reset; //reset
+  input cpu_clock; //clock
 
+  output reg cpu_send; // Bit para indicar que os dados estão no barramento.
+  output reg [3:0] cpu_dados; //Dados gerados pela CPU
 
-
-
-
-
-module CPU(cpu_rst, cpu_clk, cpu_send, cpu_ack, cpu_dados);
-  input cpu_ack;
-  input cpu_rst; //reset
-  input cpu_clk; //clock
-
-  output reg cpu_send;
-  output reg [3:0] cpu_dados;
-
-  reg E;  //estado
-  reg PE; //próximo estado
-  reg last_ack;
+  reg cpu_estado_atual;  //estado
+  reg cpu_proximo_estado; //próximo estado
 
   /***** ATUALIZAR ESTADO ATUAL *****/
-  always @ (posedge cpu_clk)
+  always @ (posedge cpu_clock)
     begin
-      if(cpu_rst == 1)
-        E <= 0;
+      if(cpu_reset == 1)
+        cpu_estado_atual <= 0;
       else
-        E <= PE;
+        cpu_estado_atual <= cpu_proximo_estado;
     end
   /***** END - ATUALIZAR ESTADO ATUAL *****/
 
@@ -97,38 +90,27 @@ module CPU(cpu_rst, cpu_clk, cpu_send, cpu_ack, cpu_dados);
   always @ (*)
     begin
       if(cpu_ack == 0)
-        PE = 2'b01;
+        cpu_proximo_estado = 1;
       else
-        PE = 2'b00;
+        cpu_proximo_estado = 0;
 	end
   /***** CALCULAR PRÓXIMO ESTADO *****/
 
-  /***** ATUALIZAR O ACK *****/
-  always @ (posedge cpu_clk)
+  /***** ATUALIZAR O SEND *****/
+  always @ (posedge cpu_clock)
     begin
-      if (cpu_rst == 1)
-        begin
-          cpu_send <= 0;
-          last_ack <= 0;
-        end
-      else if ((cpu_ack == 1 && last_ack == 0) || (last_ack == 1 && cpu_ack == 1))
-        begin
-          cpu_send <= 0;
-          last_ack <= 1;
-        end
+      if(cpu_estado_atual == 1 && cpu_ack == 0)
+        cpu_send <= 1;
       else
-        begin
-          cpu_send <= 1;
-          last_ack <= 0;
-        end
+        cpu_send <= 0;
     end
-   /*****END - ATUALIZAR O ACK *****/
-  
+   /*****END - ATUALIZAR O SEND *****/
+
    /***** DEFINE PRÓXIMO VALOR PARA DADOS *****/
-   always @ (posedge cpu_clk)
+  always @ (posedge cpu_clock)
      begin
-       if (cpu_rst == 1 || cpu_dados == 4'b1111)
-		cpu_dados <= 0;
+       if (cpu_reset == 1 || cpu_dados == 4'b1111)
+         cpu_dados <= 0;
        else
          cpu_dados <= cpu_dados + 1;
      end
