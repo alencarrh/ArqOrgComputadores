@@ -9,8 +9,8 @@ module PERIFERICO(per_reset, per_clock, per_send, per_ack, in_per_dados);
   input [3:0] in_per_dados;
   reg [3:0] per_dados; //dados recebidos da CPU
 
-  reg estado_atual;
-  reg proximo_estado;
+  reg per_estado_atual;
+  reg per_proximo_estado;
 
   //variáveis de controle
   reg copiou_dados; //Indica se os dados foram copiados
@@ -19,9 +19,9 @@ module PERIFERICO(per_reset, per_clock, per_send, per_ack, in_per_dados);
   always @ (posedge per_clock)
     begin
       if(per_reset == 1)
-          estado_atual <= 0;
+          per_estado_atual <= 0;
       else
-	      estado_atual <= proximo_estado;
+	      per_estado_atual <= per_proximo_estado;
     end
   /***** END - ATUALIZAR ESTADO ATUAL *****/
 
@@ -30,16 +30,16 @@ module PERIFERICO(per_reset, per_clock, per_send, per_ack, in_per_dados);
   always @ (*)
     begin
       if (per_send == 1)
-    	proximo_estado = 1;
+    	per_proximo_estado = 1;
       else
-        proximo_estado = 0;
+        per_proximo_estado = 0;
     end
   /***** END - CALCULAR PRÓXIMO ESTADO *****/
 
   /***** ATUALIZAR O ACK *****/
   always @ (posedge per_clock)
     begin
-      if (copiou_dados == 1 && estado_atual == 1)
+      if (copiou_dados == 1 && per_estado_atual == 1)
         per_ack <= 1;
       else
         per_ack <= 0;
@@ -48,9 +48,9 @@ module PERIFERICO(per_reset, per_clock, per_send, per_ack, in_per_dados);
 
 
   /***** TRATAR COM DADOS *****/
-  always @ (estado_atual)
+  always @ (per_estado_atual)
     begin
-      if (per_send == 1 && estado_atual == 1)
+      if (per_send == 1 && per_estado_atual == 1)
         begin
           copiou_dados = 1;
           per_dados = in_per_dados;
