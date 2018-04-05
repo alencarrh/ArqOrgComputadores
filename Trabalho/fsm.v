@@ -37,7 +37,7 @@ module PERIFERICO(per_reset, per_clock, per_send, per_ack, in_per_dados);
   /***** END - CALCULAR PRÓXIMO ESTADO *****/
 
   /***** ATUALIZAR O ACK *****/
-  always @ (posedge per_clock)
+  always @ (*)
     begin
       if (copiou_dados == 1 && per_estado_atual == 1)
         per_ack <= 1;
@@ -50,10 +50,10 @@ module PERIFERICO(per_reset, per_clock, per_send, per_ack, in_per_dados);
   /***** TRATAR COM DADOS *****/
   always @ (per_estado_atual)
     begin
-      if (per_send == 1 && per_estado_atual == 1)
+      if (per_send == 1 && per_estado_atual == 1)//Talvez validar o send não é necessário
         begin
-          copiou_dados = 1;
           per_dados = in_per_dados;
+          copiou_dados = 1;
         end
       else
         begin

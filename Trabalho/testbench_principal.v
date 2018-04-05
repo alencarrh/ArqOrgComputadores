@@ -31,8 +31,8 @@ module testbench;
 
 
   //Controle dos clock
-  always #1 cpu_clk<=~cpu_clk;
-  always #1 per_clk<=~per_clk;
+  always #3 cpu_clk<=~cpu_clk;
+  always #3 per_clk<=~per_clk;
 
   initial
 	begin
@@ -40,18 +40,19 @@ module testbench;
       $dumpvars(3,testbench);
 
       // Resetar todos valores
+
       cpu_clk = 0;
       cpu_rst = 1;
 
       per_clk = 0;
       per_rst = 1;
 
-      #5
+      #10
 
       //Start
       cpu_rst = 0;
       per_rst = 0;
 
-      #100 $finish; //<-- End simulation
+      #200 $finish; //<-- End simulation
 	end
 endmodule
