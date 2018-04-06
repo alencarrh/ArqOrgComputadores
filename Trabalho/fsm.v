@@ -12,8 +12,6 @@ module PERIFERICO(per_reset, per_clock, per_send, per_ack, in_per_dados);
   reg per_estado_atual;
   reg per_proximo_estado;
 
-  //variáveis de controle
-  reg copiou_dados; //Indica se os dados foram copiados
 
   /***** ATUALIZAR ESTADO ATUAL *****/
   always @ (posedge per_clock)
@@ -29,22 +27,14 @@ module PERIFERICO(per_reset, per_clock, per_send, per_ack, in_per_dados);
   /***** CALCULAR PRÓXIMO ESTADO *****/
   always @ (*)
     begin
-      if (per_send == 1)
-    	per_proximo_estado = 1;
-      else
-        per_proximo_estado = 0;
+    	per_proximo_estado = per_send;
     end
   /***** END - CALCULAR PRÓXIMO ESTADO *****/
 
   /***** ATUALIZAR O ACK *****/
   always @ (*)
-    begin
-      if (copiou_dados == 1 && per_estado_atual == 1)
-        per_ack <= 1;
-      else
-        per_ack <= 0;
-    end
-    /***** END - ATUALIZAR O ACK *****/
+    	per_ack <= per_estado_atual;      
+  /***** END - ATUALIZAR O ACK *****/
 
 
   /***** TRATAR COM DADOS *****/
@@ -53,11 +43,9 @@ module PERIFERICO(per_reset, per_clock, per_send, per_ack, in_per_dados);
       if (per_send == 1 && per_estado_atual == 1)//Talvez validar o send não é necessário
         begin
           per_dados = in_per_dados;
-          copiou_dados = 1;
         end
       else
         begin
-          copiou_dados = 0;
           per_dados = 4'b0000;
         end
     end
