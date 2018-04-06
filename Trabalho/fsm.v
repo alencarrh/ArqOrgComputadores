@@ -26,9 +26,7 @@ module PERIFERICO(per_reset, per_clock, per_send, per_ack, in_per_dados);
 
   /***** CALCULAR PRÓXIMO ESTADO *****/
   always @ (*)
-    begin
     	per_proximo_estado = per_send;
-    end
   /***** END - CALCULAR PRÓXIMO ESTADO *****/
 
   /***** ATUALIZAR O ACK *****/
@@ -76,12 +74,7 @@ module CPU(cpu_reset, cpu_clock, cpu_send, cpu_ack, cpu_dados);
 
   /***** CALCULAR PRÓXIMO ESTADO *****/
   always @ (*)
-    begin
-      if(cpu_ack == 0)
-        cpu_proximo_estado = 1;
-      else
-        cpu_proximo_estado = 0;
-	end
+      cpu_proximo_estado =~ cpu_ack;
   /***** CALCULAR PRÓXIMO ESTADO *****/
 
   /***** ATUALIZAR O SEND *****/
