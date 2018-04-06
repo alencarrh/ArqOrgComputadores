@@ -33,7 +33,7 @@ module PERIFERICO(per_reset, per_clock, per_send, per_ack, in_per_dados);
 
   /***** ATUALIZAR O ACK *****/
   always @ (*)
-    	per_ack <= per_estado_atual;      
+    	per_ack = per_estado_atual;
   /***** END - ATUALIZAR O ACK *****/
 
 
