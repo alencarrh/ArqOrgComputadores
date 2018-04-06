@@ -38,7 +38,7 @@ module PERIFERICO(per_reset, per_clock, per_send, per_ack, in_per_dados);
   /***** TRATAR COM DADOS *****/
   always @ (per_estado_atual)
     begin
-      if (per_send == 1 && per_estado_atual == 1)//Talvez validar o send não é necessário
+      if (per_send == 1 && per_estado_atual == 1)
         begin
           per_dados = in_per_dados;
         end
@@ -78,14 +78,9 @@ module CPU(cpu_reset, cpu_clock, cpu_send, cpu_ack, cpu_dados);
   /***** CALCULAR PRÓXIMO ESTADO *****/
 
   /***** ATUALIZAR O SEND *****/
-  always @ (posedge cpu_clock)
-    begin
-      if(cpu_estado_atual == 1 && cpu_ack == 0)
-        cpu_send <= 1;
-      else
-        cpu_send <= 0;
-    end
-   /*****END - ATUALIZAR O SEND *****/
+  always @ (*)
+    cpu_send = cpu_estado_atual;
+  /*****END - ATUALIZAR O SEND *****/
 
    /***** DEFINE PRÓXIMO VALOR PARA DADOS *****/
   always @ (posedge cpu_clock)
